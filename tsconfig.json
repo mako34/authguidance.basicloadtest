@@ -2,8 +2,7 @@
   "compilerOptions": {
     "target": "es2017",
     "strict": true,
-    "lib": ["es2017", "dom"],
-    "strictPropertyInitialization": false
+    "lib": ["es2017"],
   },
   "include": [
     "src/**/*.ts"

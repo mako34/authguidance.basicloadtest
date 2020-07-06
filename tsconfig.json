@@ -3,7 +3,7 @@
     "target": "es2017",
     "strict": true,
     "lib": ["es2017"],
-    "esModuleInterop": true,
+    "esModuleInterop": true
   },
   "include": [
     "src/**/*.ts"

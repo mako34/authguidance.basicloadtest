@@ -1,48 +1,31 @@
-import {AxiosProxyConfig} from 'axios';
 import TunnelAgent from 'tunnel-agent';
 import url from 'url';
 
 /*
- * Manage supplying the HTTP proxy on API calls and AppAuth-JS requests
+ * Manage supplying the HTTP proxy on API calls and OAuth requests
  */
 export class HttpProxy {
 
     /*
-     * Set configuration
+     * Create the HTTP agent at application startup
      */
-    public static initialize(useProxy: boolean, proxyHost: string, proxyPort: number): void {
+    public static initialize(useProxy: boolean, proxyUrl: string): void {
 
         if (useProxy) {
-            HttpProxy._configuration = {
-                host: proxyHost,
-                port: proxyPort,
-            }
-        }
-    }
-
-    /*
-     * Return the configured details for Axios calls
-     */
-    public static get(): AxiosProxyConfig | undefined {
-        return HttpProxy._configuration ?? undefined;
-    }
-
-    /*
-     * Return the configured details for HTTP libraries that require a tunnel agent
-     */
-    public static getTunnelAgent(): any {
-
-        if (HttpProxy._configuration) {
-            const proxyUrl = `${HttpProxy._configuration.host}:${HttpProxy._configuration.port}`;
             const opts = url.parse(proxyUrl);
-            return TunnelAgent.httpsOverHttp({
+            HttpProxy._agent = TunnelAgent.httpsOverHttp({
                 proxy: opts,
             });
         }
-
-        return null;
     }
 
-    // The global proxy configuration
-    private static _configuration: AxiosProxyConfig | null = null;
+    /*
+     * Return the configured agent
+     */
+    public static getAgent(): any {
+        return HttpProxy._agent;
+    }
+
+    // The global proxy agent
+    private static _agent: any = null;
 }

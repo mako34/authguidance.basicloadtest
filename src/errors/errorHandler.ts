@@ -11,20 +11,17 @@ export class ErrorHandler {
     public static fromHttpResponse(errorCode: any, error: any): LoadTestError {
 
         // Create a typed error
-        const responseBody = error.body;
+        const responseBody = (error.response && error.response.data) ? error.response.data : null;
         const loadTestError = new LoadTestError(errorCode, 'Problem encountered during an HTTP request');
 
+        // Populate details
         if (responseBody) {
-            loadTestError.setDetails(responseBody);
+            loadTestError.details = responseBody;
         } else if (error.message) {
-            loadTestError.setDetails(error.message);
-        }
-
-        if (loadTestError.stack) {
-            loadTestError.addStackFrames(loadTestError.stack);
+            loadTestError.details = error.message;
         }
         if (error.stack) {
-            loadTestError.addStackFrames(error.stack);
+            loadTestError.stack = error.stack;
         }
 
         return loadTestError;
@@ -42,15 +39,13 @@ export class ErrorHandler {
 
         // Create a typed error
         const loadTestError = new LoadTestError('load_test_exception', 'Problem encountered in the load test');
-        if (exception.message) {
-            loadTestError.setDetails(exception.message);
-        }
 
-        if (loadTestError.stack) {
-            loadTestError.addStackFrames(loadTestError.stack);
+        // Populate details
+        if (exception.message) {
+            loadTestError.details = exception.message;
         }
         if (exception.stack) {
-            loadTestError.addStackFrames(exception.stack);
+            loadTestError.stack = exception.stack;
         }
 
         return loadTestError;

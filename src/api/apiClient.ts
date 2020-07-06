@@ -76,7 +76,7 @@ export class ApiClient {
                 Accept: 'application/json',
                 Authorization: `Bearer ${accessToken}`,
             },
-            proxy: HttpProxy.get(),
+            httpsAgent: HttpProxy.getAgent(),
         };
 
         // Add headers used for correlation and testing

@@ -9,9 +9,6 @@ export class LoadTestError extends Error {
     // Details
     private _details: any;
 
-    // Stack details when this sample's code goes wrong
-    private _stackFrames: string[];
-
     /*
      * All client errors have a status, an error code and a message
      */
@@ -21,7 +18,6 @@ export class LoadTestError extends Error {
         super(message);
         this._errorCode = errorCode;
         this._details = null;
-        this._stackFrames = [];
 
         // Ensure that instanceof works
         Object.setPrototypeOf(this, new.target.prototype);
@@ -31,7 +27,11 @@ export class LoadTestError extends Error {
         return this._errorCode;
     }
 
-    public setDetails(value: any) {
+    public get details(): any {
+        return this._details;
+    }
+
+    public set details(value: any) {
         this._details = value;
     }
 
@@ -48,23 +48,27 @@ export class LoadTestError extends Error {
         if (this._details) {
             data.details = this._details;
         }
-        if (this._stackFrames.length > 0) {
-            data.stack = this._stackFrames;
+
+        if (this.stack) {
+            data.stack = this.getStackFrames()
         }
 
         return JSON.stringify(data, null, 2);
     }
 
     /*
-     * Set stack details for exceptions
+     * Format stack frames in a readable manner
      */
-    public addStackFrames(stack: string): void {
+    private getStackFrames(): string[] {
 
+        const frames: string[] = [];
         if (this.stack) {
-            const items = stack.split('\n').map((x: string) => x.trim()) as string[];
+            const items = this.stack.split('\n').map((x: string) => x.trim()) as string[];
             items.forEach((i) => {
-                this._stackFrames.push(i);
+                frames.push(i);
             });
         }
+
+        return frames;
     }
 }

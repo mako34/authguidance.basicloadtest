@@ -2,7 +2,7 @@
 
 ### Overview
 
-* A simple Node JS console app to get access tokens and call the API concurrently
+* A simple Node JS console app to get access tokens and call our APIs concurrently
 
 ### Prerequisites
 

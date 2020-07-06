@@ -2,8 +2,7 @@
     "app": {
         "apiBaseUrl":   "https://api.mycompany.com/api",
         "useProxy":     false,
-        "proxyHost":    "http://127.0.0.1",
-        "proxyPort":    8888
+        "proxyUrl":    "http://127.0.0.1:8888"
     },
     "oauth": {
         "authority":    "https://dev-843469.oktapreview.com/oauth2/default",

@@ -22,7 +22,7 @@ export class Authenticator {
         // Set the HTTP proxy
         custom.setHttpOptionsDefaults({
             timeout: 10000,
-            agent: HttpProxy.getTunnelAgent(),
+            agent: HttpProxy.getAgent(),
         });
     }
 

@@ -21,7 +21,7 @@ export class ApiClient {
      */
     public async getUserInfoClaims(accessToken: string, context: CallContext): Promise<CallContext> {
 
-        return await this.getApiData(
+        return this.getApiData(
             accessToken,
             '/userclaims/current',
             'GET',
@@ -34,7 +34,7 @@ export class ApiClient {
      */
     public async getCompanyList(accessToken: string, context: CallContext): Promise<CallContext> {
 
-        return await this.getApiData(
+        return this.getApiData(
             accessToken,
             '/companies',
             'GET',
@@ -48,7 +48,7 @@ export class ApiClient {
     public async getCompanyTransactions(
         accessToken: string, id: number, context: CallContext): Promise<CallContext> {
 
-        return await this.getApiData(
+        return this.getApiData(
             accessToken,
             `/companies/${id}/transactions`,
             'GET',
@@ -112,11 +112,9 @@ export class ApiClient {
             }
 
             // Add error details to the context
-            if (e.response && e.response.data && e.response.data.code) {
-                context.error = ErrorHandler.fromHttpResponse(e.response.data.code, e);
-            } else {
-                context.error = ErrorHandler.fromHttpResponse('api_request_error', e);
-            }
+            const hasErrorCode = e.response && e.response.data && e.response.data.code;
+            context.error = hasErrorCode ? ErrorHandler.fromHttpResponse(e.response.data.code, e)
+                                         : ErrorHandler.fromHttpResponse('api_request_error', e);
 
         } finally {
 

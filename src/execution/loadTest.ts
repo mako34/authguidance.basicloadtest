@@ -196,7 +196,7 @@ export class LoadTest {
     /*
      * Start execution and return a success promise for both successful and failed API requests
      */
-     private executeApiRequest(callback: () => Promise<CallContext>): Promise<CallContext> {
+    private executeApiRequest(callback: () => Promise<CallContext>): Promise<CallContext> {
 
         return new Promise<CallContext>((resolve) => {
 

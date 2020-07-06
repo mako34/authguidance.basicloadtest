@@ -102,7 +102,7 @@ export class CallContext {
      * Output tabular data that can be directed to a file and then compared to the API logs
      */
     // tslint:disable:max-line-length
-     public toString() {
+    public toString() {
         let result = `${this._operationName}\t${this._utcTime.toISOString()}\t${this._correlationId}\t${this._statusCode}\t${this._millisecondsTaken}`;
         if (this._error) {
             result += `\t${this._error.getErrorCode()}`;

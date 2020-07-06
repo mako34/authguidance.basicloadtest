@@ -73,7 +73,7 @@ export class LoadTest {
     }
 
     /*
-     * Do some initial warm up requests, all of which will trigger an authorizer
+     * Do a warm up request for each token, to trigger the API to do authorization and claims lookup
      */
     private async sendWarmupRequests(accessTokens: string[]): Promise<void> {
 
@@ -211,8 +211,8 @@ export class LoadTest {
                     console.log(color.red(context.toString()));
                 }
 
+                // Resolve the promise
                 resolve(context);
-
             });
         });
     }

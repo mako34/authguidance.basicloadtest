@@ -3,14 +3,11 @@
  */
 export class LoadTestError extends Error {
 
-    // The error code
     private _errorCode: string;
-
-    // Details
     private _details: any;
 
     /*
-     * All client errors have a status, an error code and a message
+     * This simple error has a status, an error code, some technical details and a call stack
      */
     public constructor(errorCode: string, message: string) {
 

@@ -1,4 +1,4 @@
-import * as color from 'colors';
+import color from 'colors';
 import {Guid} from 'guid-typescript';
 import {ApiClient} from '../api/apiClient';
 import {Configuration} from '../configuration/configuration';
@@ -31,12 +31,14 @@ export class LoadTest {
     public async execute(): Promise<void> {
 
         // First get some access tokens
+        const startMessage = `Load test session ${this._sessionId} starting at ${new Date().toISOString()}\n`;
+        console.log(color.blue(startMessage));
         const accessTokens: string[] = await this.getAccessTokens();
 
         // Show a startup message
         const startTime = process.hrtime();
-        console.log(color.yellow(`Load test session starting for ID: ${this._sessionId} at ${new Date().toISOString()}`));
-        console.log(color.yellow(`OPERATION..\tSTART TIME ...............\tCORRELATION ID ...................\tSTATUS\tMS\tERROR`));
+        const header = `\nOPERATION...\tSTART TIME ...............\tCORRELATION ID ...................\tSTATUS\tMS\tERROR`;
+        console.log(color.yellow(header));
 
         // First execute some warm up requests
         await this.sendWarmupRequests(accessTokens);
@@ -46,8 +48,10 @@ export class LoadTest {
 
         // Report results
         const endTime = process.hrtime(startTime);
-        const secondsTaken = Math.floor((endTime[0] * 1000000000 + endTime[1]) / 1000000000);
-        console.log(color.yellow(`Load test completed for ID: ${this._sessionId} in ${secondsTaken} seconds: (${this._errorCount} errors from ${this._totalCount} requests)`));
+        const millisecondsTaken = Math.floor((endTime[0] * 1000000000 + endTime[1]) / 1000000);
+        const endMessage = `Load test session ${this._sessionId} completed in ${millisecondsTaken} milliseconds`;
+        const errorStats = `${this._errorCount} errors from ${this._totalCount} requests`;
+        console.log(color.blue(`\n${endMessage}: (${errorStats})`));
     }
 
     /*
@@ -73,7 +77,7 @@ export class LoadTest {
      */
     private async sendWarmupRequests(accessTokens: string[]): Promise<void> {
 
-        const requests: Array<() => Promise<CallContext>> = [];
+        const requests: (() => Promise<CallContext>)[] = [];
         for (let index = 0; index < 5; index++) {
             requests.push(this.createUserInfoRequest(accessTokens[index]));
         }
@@ -86,8 +90,8 @@ export class LoadTest {
     private async sendLoadTestRequests(accessTokens: string[]): Promise<void> {
 
         // Next produce some requests that will run in parallel
-        const requests: Array<() => Promise<CallContext>> = [];
-        for (let index = 0; index < 95; index++) {
+        const requests: (() => Promise<CallContext>)[] = [];
+        for (let index = 0; index < 45; index++) {
 
             // Create a 401 error on request 10, by making the access token act expired
             let accessToken = accessTokens[index % 5];
@@ -108,8 +112,8 @@ export class LoadTest {
 
             } else if (index % 5 === 2) {
 
-                // On request 52 try to access unauthorized data for company 3
-                const companyId = (index === 52) ? 3 : 2;
+                // On request 32 try to access unauthorized data for company 3
+                const companyId = (index === 32) ? 3 : 2;
                 requests.push(this.createTransactionsRequest(accessToken, companyId));
 
             } else if (index % 5 === 4) {
@@ -161,7 +165,7 @@ export class LoadTest {
      * Issue API requests in batches of 5, to avoid excessive queueing in the client
      * By default there is a limit of 5 concurrent outgoing requests to a single host
      */
-    private async executeApiRequests(requests: Array<() => Promise<CallContext>>): Promise<CallContext[]> {
+    private async executeApiRequests(requests: (() => Promise<CallContext>)[]): Promise<CallContext[]> {
 
         // Set counters
         const total = requests.length;
@@ -221,9 +225,9 @@ export class LoadTest {
         // Create context for this operation
         const context = new CallContext(this._sessionId, operationName);
 
-        // On request 64 we'll simulate a 500 error via a custom header
+        // On request 14 we'll simulate a 500 error via a custom header
         this._totalCount++;
-        if (this._totalCount === 64) {
+        if (this._totalCount === 14) {
             context.cause500 = true;
         }
 

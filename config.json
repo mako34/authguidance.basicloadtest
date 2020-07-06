@@ -1,14 +1,15 @@
 {
     "app": {
-        "apiBaseUrl": "https://api.mycompany.com/api",
-        "useProxy": false,
-        "proxyUrl": "http://127.0.0.1:8888"
+        "apiBaseUrl":   "https://api.mycompany.com/api",
+        "useProxy":     false,
+        "proxyHost":    "http://127.0.0.1",
+        "proxyPort":    8888
     },
     "oauth": {
-        "authority": "https://dev-843469.oktapreview.com/oauth2/default",
-        "clientId": "0oamg76eevEWT0LYz0h7",
+        "authority":    "https://dev-843469.oktapreview.com/oauth2/default",
+        "clientId":     "0oamg76eevEWT0LYz0h7",
         "clientSecret": "iSqXCyB40K0zaY-ErWv73d0taYNeP5UHwvlJkydb",
-        "userId": "guestuser@authguidance.com",
-        "password": ""
+        "userId":       "guestuser@authguidance.com",
+        "password":     "Passw0rd1"
     }
 }

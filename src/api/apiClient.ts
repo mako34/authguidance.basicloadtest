@@ -1,8 +1,9 @@
-import * as got from 'got';
+import axios, {AxiosRequestConfig, Method} from 'axios';
 import {AppConfiguration} from '../configuration/appConfiguration';
 import {ErrorHandler} from '../errors/errorHandler';
+import {AxiosUtils} from '../utilities/axiosUtils';
 import {CallContext} from '../utilities/callContext';
-import {DebugProxyAgent} from '../utilities/debugProxyAgent';
+import {HttpProxy} from '../utilities/httpProxy';
 
 /*
  * A class via which to call our API
@@ -61,37 +62,29 @@ export class ApiClient {
     private async getApiData(
         accessToken: string,
         path: string,
-        method: string,
+        method: Method,
         payload: any,
         context: CallContext): Promise<CallContext> {
 
-        // Common headers
-        const headers: any =  {
-            Accept: 'application/json',
-            Authorization: `Bearer ${accessToken}`,
+        // Define request options
+        const url = `${this._configuration.apiBaseUrl}${path}`;
+        const options: AxiosRequestConfig = {
+            url,
+            method,
+            data: payload,
+            headers: {
+                Accept: 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+            proxy: HttpProxy.get(),
         };
 
         // Add headers used for correlation and testing
         const customHeaders = context.customHeaders;
         for (const header in customHeaders) {
             if (header) {
-                headers[header] = customHeaders[header];
+                options.headers[header] = customHeaders[header];
             }
-        }
-
-        // Wait for up to 10 seconds and avoid the default behaviour of retrying a 500 error
-        const options: any = {
-            method,
-            headers,
-            json: true,
-            agent: DebugProxyAgent.get(),
-            timeout: 10000,
-            retry: 0,
-        };
-
-        // Add a payload if needed
-        if (payload) {
-            options.body = payload;
         }
 
         // Start measuring performance
@@ -100,26 +93,27 @@ export class ApiClient {
         try {
 
             // Call the API
-            const url = `${this._configuration.apiBaseUrl}${path}`;
-            const response = await got(url, options);
+            const response = await axios.request(options);
+            AxiosUtils.checkJson(response.data);
 
             // Record the status code
-            if (response.statusCode) {
-                context.statusCode = response.statusCode;
+            if (response.status) {
+                context.statusCode = response.status;
             }
 
-            context.response = response.body;
+            // Record response data
+            context.response = response.data;
 
         } catch (e) {
 
-            // Record the status code
-            if (e.statusCode) {
-                context.statusCode = e.statusCode;
+            // Add the status code to the context
+            if (e.response && e.response.status) {
+                context.statusCode = e.response.status;
             }
 
-            // Set error details
-            if (e.body && e.body.code) {
-                context.error = ErrorHandler.fromHttpResponse(e.body.code, e);
+            // Add error details to the context
+            if (e.response && e.response.data && e.response.data.code) {
+                context.error = ErrorHandler.fromHttpResponse(e.response.data.code, e);
             } else {
                 context.error = ErrorHandler.fromHttpResponse('api_request_error', e);
             }

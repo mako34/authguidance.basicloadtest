@@ -1,5 +1,7 @@
 # authguidance.basicloadtest
 
+[![Known Vulnerabilities](https://snyk.io/test/github/gary-archer/authguidance.basicloadtest/badge.svg?targetFile=package.json)](https://snyk.io/test/github/gary-archer/authguidance.basicloadtest?targetFile=package.json)
+
 ### Overview
 
 * A simple Node JS console app to get access tokens and call our APIs concurrently
